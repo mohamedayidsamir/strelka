@@ -554,7 +554,8 @@ class Backend(object):
                         pipeline.rpush(f"event:{root_id}", format_event(event))
                         pipeline.expireat(f"event:{root_id}", expire_at)
                         pipeline.execute()
-
+                        webhook_url = "http://109.205.181.248:5001/webhook"
+                        requests.post(webhook_url,format_event(event),timeout=5)
                     signal.alarm(0)
 
                 except DistributionTimeout:
