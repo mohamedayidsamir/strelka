@@ -747,7 +747,7 @@ scanners:
   'TestScan':
     - positive:
         flavors:
-          - 'xml_file'
+          - 'text/plain'
           - 'application/zip'
       priority: 5
 
