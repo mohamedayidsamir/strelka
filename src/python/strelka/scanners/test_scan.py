@@ -1,5 +1,5 @@
 from strelka import strelka
 
-class TestScan(StrelkaScanner):
+class TestScan(strelka.Scanner):
     def scan(self, data, file, options):
         self.event["helllllllllllllllllllllllllllllllloooooooooooooooooooooooooo"] = len(data)
