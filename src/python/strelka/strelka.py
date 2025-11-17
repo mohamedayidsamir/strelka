@@ -14,7 +14,7 @@ import uuid
 from types import FrameType
 from typing import Generator, Optional, Tuple
 from urllib.parse import urlparse
-
+import requests
 import inflection
 import magic
 import redis
