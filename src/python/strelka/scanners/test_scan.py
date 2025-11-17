@@ -1,5 +1,5 @@
 from strelka import strelka
 
-class PdfScanner(StrelkaScanner):
+class TestScan(StrelkaScanner):
     def scan(self, data, file, options):
         self.event["helllllllllllllllllllllllllllllllloooooooooooooooooooooooooo"] = len(data)
