@@ -45,8 +45,17 @@ RUN apt-get -q update && \
     python-is-python3 \
     pkg-config \
     supervisor \
-    ncat
-
+    ncat \
+    ca-certificates \
+    wget
+# Install Chrome + Go + httpx
+RUN wget https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/google-chrome-stable_142.0.7444.162-1_amd64.deb && \
+    dpkg -i google-chrome-stable_142.0.7444.162-1_amd64.deb || apt-get -f install -y && \
+    curl -OL https://go.dev/dl/go1.22.4.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.22.4.linux-amd64.tar.gz && \
+    ln -s /usr/local/go/bin/go /usr/local/bin/go && \
+    ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt && \
+    go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 # Install Zeek
 RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_22.04/ /' | tee /etc/apt/sources.list.d/security:zeek.list && \
     curl -fsSL https://download.opensuse.org/repositories/security:zeek/xUbuntu_22.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null && \
